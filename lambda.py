@@ -10,12 +10,12 @@ def handler(event=None, context=None):
         password = event[0]["password"] if event else environ.get("rabbit_project_password")
         vhost = event[0]["vhost"] if event else environ.get("rabbit_project_vhost")
         arbiter = Arbiter(host=environ.get("rabbit_host"), port=5672, user=user, password=password, vhost=vhost,
-                          timeout=120)
+                          timeout=int(environ.get("AWS_LAMBDA_FUNCTION_TIMEOUT", 120)))
         try:
             queues = list(arbiter.workers().keys())
+            arbiter.close()
         except:
             queues = []
-        arbiter.close()
 
         url = f"{environ.get('galloper_url')}/api/v1/projects/rabbitmq/{vhost}"
         data = {"queues": json.dumps(queues)}
