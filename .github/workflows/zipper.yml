@@ -20,7 +20,7 @@ jobs:
     - name: setting up docker builder
       run: |
         mkdir $LAMBDA_DIR
-        cp requirements.txt lambda_function.py $LAMBDA_DIR
+        cp requirements.txt lambda.py $LAMBDA_DIR
         docker run --rm -v "$LAMBDA_DIR":/var/task lambci/lambda:build-python3.11 pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
     - name: zipping
       run: |
