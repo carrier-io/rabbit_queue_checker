@@ -15,13 +15,14 @@ jobs:
     env:
       LAMBDA_DIR: /tmp/lambda
       ARTEFACT_NAME: rabbit_queue_checker.zip
+      LAMBDA_BUILDER: "lambci/lambda:build-python3.8"
     steps:
     - uses: actions/checkout@v3
     - name: setting up docker builder
       run: |
         mkdir $LAMBDA_DIR
         cp requirements.txt lambda.py $LAMBDA_DIR
-        docker run --rm -v "$LAMBDA_DIR":/var/task lambci/lambda:build-python3.11 pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
+        docker run --rm -v "$LAMBDA_DIR":/var/task $LAMBDA_BUILDER pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
     - name: zipping
       run: |
         cd $LAMBDA_DIR
