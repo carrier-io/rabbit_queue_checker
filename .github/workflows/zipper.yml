@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: setting up docker builder
-      run: docker run --rm -v .:/var/task $LAMBDA_BUILDER pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
+      run: docker run --rm -v $(pwd):/var/task $LAMBDA_BUILDER pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
     - name: zipping
       run: zip -r -9 $ARTIFACT_NAME .
     - uses: actions/upload-artifact@v3
