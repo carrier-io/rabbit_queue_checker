@@ -66,10 +66,14 @@ def handler(event=None, context=None):
             vhost = vhost_template.format(project_id=i)
             if debug_sleep:
                 print('getting queues for', vhost)
-            queues = get_vhost_queues(host, port, user, password, vhost, timeout)
-            all_queues[vhost] = queues
-            if debug_sleep:
-                print('got queues for', vhost, ' ', queues)
+            try:
+                queues = get_vhost_queues(host, port, user, password, vhost, timeout)
+                all_queues[vhost] = queues
+                if debug_sleep:
+                    print('got queues for', vhost, ' ', queues)
+            except Exception as e:  # pika.exceptions.ProbableAccessDeniedError
+                print('VHOST not found: ', vhost, 'skipping...')
+                print(e)
 
         requests.put(put_url, json=all_queues, headers=headers)
 
