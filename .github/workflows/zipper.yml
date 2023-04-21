@@ -29,6 +29,6 @@ jobs:
     - name: Create Release
       uses: ncipollo/release-action@v1.12.0
       with:
-        artifacts: ./package/$ARTIFACT_NAME
+        artifacts: ./package/{{ env.ARTIFACT_NAME }}
         makeLatest: true
         tag: latest
