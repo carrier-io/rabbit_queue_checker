@@ -24,8 +24,8 @@ jobs:
 #    - name: Create artifact
 #      uses: actions/upload-artifact@v3
 #      with:
-#        name: rabbit_queue_checker
-#        path: ./rabbit_queue_checker.zip
+#        name: task_zip
+#        path: ./${{env.ARTIFACT_NAME}}
     - name: Create Release
       uses: ncipollo/release-action@v1.12.0
       with:
