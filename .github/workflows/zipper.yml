@@ -24,4 +24,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: rabbit_queue_checker
-        path: $(pwd)/$ARTIFACT_NAME
+        path: ./rabbit_queue_checker.zip
