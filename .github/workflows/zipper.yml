@@ -31,4 +31,5 @@ jobs:
       with:
         artifacts: ./package/{{ env.ARTIFACT_NAME }}
         makeLatest: true
+        allowUpdates: true
         tag: latest
