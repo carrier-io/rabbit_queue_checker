@@ -41,7 +41,7 @@ def handler(event: Optional[List[dict]] = None, context=None):
     host = environ.get("rabbit_host")
     port = environ.get("rabbit_port", 5672)
     timeout = environ.get("AWS_LAMBDA_FUNCTION_TIMEOUT", 120)
-    min_arbiter_timeout = environ.get("min_arbiter_timeout", 3)
+    min_arbiter_timeout = environ.get("min_arbiter_timeout", 10)
 
     put_url = environ.get('put_url')
     project_ids_get_url = environ.get('project_ids_get_url')
