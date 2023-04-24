@@ -12,6 +12,7 @@ on:
       tag:
         default: "latest"
         description: "Release tag"
+        required: true
 
 jobs:
   make-zip:
@@ -36,4 +37,4 @@ jobs:
         artifacts: ./${{ env.ARTIFACT_NAME }}
         makeLatest: true
         allowUpdates: true
-        tag: ${{ github.event.inputs.name }}
+        tag: ${{ github.event.inputs.tag }}
