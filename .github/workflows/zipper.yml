@@ -22,11 +22,8 @@ jobs:
       DEFAULT_TAG: "latest"
       LAMBDA_BUILDER: "lambci/lambda:build-python3.8"
     steps:
-    - name: Set release tag
-      id: tag
-      run: |
-        USER_INPUT=${{ github.event.inputs.tag }}
-        echo "::set-output tag=value::${USER_INPUT:-env.DEFAULT_TAG}"
+    - name: Echo tag
+      run: echo ${{ github.event.inputs.tag }:={ env.DEFAULT_TAG }}
     - uses: actions/checkout@v3
     - name: setting up docker builder
       run: docker run --rm -v $(pwd):/var/task $LAMBDA_BUILDER pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
@@ -43,4 +40,4 @@ jobs:
         artifacts: ./${{ env.ARTIFACT_NAME }}
         makeLatest: true
         allowUpdates: true
-        tag: ${{ steps.tag.outputs.value }}
+        tag: ${{ github.event.inputs.tag }:={ env.DEFAULT_TAG }}
