@@ -1,5 +1,7 @@
 from os import environ
 import json
+from typing import Optional, List
+
 from arbiter import Arbiter
 import requests
 
@@ -21,8 +23,11 @@ def get_vhost_queues(host: str, port: int, user: str, password: str, vhost: str,
     return queues
 
 
-def handler(event=None, context=None):
+def handler(event: Optional[List[dict]] = None, context=None):
     debug_sleep = environ.get("debug_sleep")
+    if event:
+        debug_sleep = event[0].get("debug_sleep")
+
     if debug_sleep:
         print('sleeping for', debug_sleep)
         try:
@@ -36,6 +41,7 @@ def handler(event=None, context=None):
     host = environ.get("rabbit_host")
     port = environ.get("rabbit_port", 5672)
     timeout = environ.get("AWS_LAMBDA_FUNCTION_TIMEOUT", 120)
+    min_arbiter_timeout = environ.get("min_arbiter_timeout", 10)
 
     put_url = environ.get('put_url')
     project_ids_get_url = environ.get('project_ids_get_url')
@@ -61,15 +67,21 @@ def handler(event=None, context=None):
         project_ids = requests.patch(project_ids_get_url, headers=headers).json()
         if debug_sleep:
             print('got project ids:', project_ids)
+        arbiter_timeout = max(timeout // len(project_ids), min_arbiter_timeout)
+        print('Timeout for arbiter will be:', arbiter_timeout)
 
         for i in project_ids:
             vhost = vhost_template.format(project_id=i)
             if debug_sleep:
                 print('getting queues for', vhost)
-            queues = get_vhost_queues(host, port, user, password, vhost, timeout)
-            all_queues[vhost] = queues
-            if debug_sleep:
-                print('got queues for', vhost, ' ', queues)
+            try:
+                queues = get_vhost_queues(host, port, user, password, vhost, timeout=arbiter_timeout)
+                all_queues[vhost] = queues
+                if debug_sleep:
+                    print('got queues for', vhost, ' ', queues)
+            except Exception as e:  # pika.exceptions.ProbableAccessDeniedError
+                print('VHOST not found: ', vhost, 'skipping...')
+                print(e)
 
         requests.put(put_url, json=all_queues, headers=headers)
 
