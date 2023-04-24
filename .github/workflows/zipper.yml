@@ -23,7 +23,13 @@ jobs:
       LAMBDA_BUILDER: "lambci/lambda:build-python3.8"
     steps:
     - name: Echo tag
-      run: echo ${github.event.inputs.tag:=env.DEFAULT_TAG}
+      run: |
+        echo "input"
+        echo ${{ github.event.inputs.tag }}
+        echo "env"
+        echo ${{ env.DEFAULT_TAG }}
+        echo "result"
+        echo ${{ github.event.inputs.tag }}:=${{ env.DEFAULT_TAG }}
     - uses: actions/checkout@v3
     - name: setting up docker builder
       run: docker run --rm -v $(pwd):/var/task $LAMBDA_BUILDER pip install -r requirements.txt -t /var/task/ --no-cache-dir --compile
