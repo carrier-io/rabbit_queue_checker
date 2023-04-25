@@ -55,11 +55,11 @@ def handler(event: Optional[List[dict]] = None, context=None):
 
     try:
         port = int(port)
-        timeout = int(timeout)
+        timeout = max(int(timeout), 20)
         if debug_sleep:
             print('getting queues for', core_vhost)
         all_queues = {
-            core_vhost: get_vhost_queues(host, port, user, password, core_vhost, timeout)
+            core_vhost: get_vhost_queues(host, port, user, password, core_vhost, min_arbiter_timeout)
         }
         if debug_sleep:
             print('got queues for', all_queues)
@@ -67,7 +67,8 @@ def handler(event: Optional[List[dict]] = None, context=None):
         project_ids = requests.patch(project_ids_get_url, headers=headers).json()
         if debug_sleep:
             print('got project ids:', project_ids)
-        arbiter_timeout = max(timeout // len(project_ids), min_arbiter_timeout)
+        # we leave ~5sec for the rest of the task to finish
+        arbiter_timeout = max((timeout - 5) // len(project_ids), min_arbiter_timeout)
         print('Timeout for arbiter will be:', arbiter_timeout)
 
         for i in project_ids:
@@ -94,5 +95,5 @@ def handler(event: Optional[List[dict]] = None, context=None):
         }
     return {
         'statusCode': 200,
-        'body': json.dumps('Done')
+        'body': json.dumps(all_queues)
     }
