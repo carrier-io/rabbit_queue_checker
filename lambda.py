@@ -67,8 +67,12 @@ def handler(event: Optional[List[dict]] = None, context=None):
         project_ids = requests.patch(project_ids_get_url, headers=headers).json()
         if debug_sleep:
             print('got project ids:', project_ids)
-        # we leave ~5sec for the rest of the task to finish
-        arbiter_timeout = max((timeout - 5) // len(project_ids), min_arbiter_timeout)
+
+        try:
+            # we leave ~5sec for the rest of the task to finish
+            arbiter_timeout = max((timeout - 5) // len(project_ids), min_arbiter_timeout)
+        except ZeroDivisionError:
+            arbiter_timeout = max((timeout - 5), min_arbiter_timeout)
         print('Timeout for arbiter will be:', arbiter_timeout)
 
         for i in project_ids:
