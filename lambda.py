@@ -25,8 +25,11 @@ def get_vhost_queues(host: str, port: int, user: str, password: str, vhost: str,
 
 def handler(event: Optional[List[dict]] = None, context=None):
     debug_sleep = environ.get("debug_sleep")
+    if isinstance(event, list):
+        event = event[0]
+
     if event:
-        debug_sleep = event[0].get("debug_sleep")
+        debug_sleep = event.get("debug_sleep")
 
     if debug_sleep:
         print('sleeping for', debug_sleep)
