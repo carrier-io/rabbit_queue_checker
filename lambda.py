@@ -17,9 +17,10 @@ def get_vhost_queues(host: str, port: int, user: str, password: str, vhost: str,
     )
     try:
         queues = list(arbiter.workers().keys())
-        arbiter.close()
     except:
         queues = []
+    finally:
+        arbiter.close()
     return queues
 
 
